@@ -288,6 +288,7 @@ def main(args):
         drop_block_rate=None,
         img_size=args.input_size,
         kron_rank = args.kron_rank,
+        block_size = args.block_size,
         shape_bias = args.shape_bias,
         freeze_A = args.kron_a_freeze,
         freeze_B = args.kron_b_freeze,

@@ -1,3 +1,7 @@
+# Tested with Python 3.8 (CPU smoke test); the original experiments ran on CUDA GPUs.
 torch==1.13.1
-torchvision==0.8.1
-timm==0.3.2
+torchvision==0.14.1
+timm==0.4.12
+tensorly
+einops
+pandas

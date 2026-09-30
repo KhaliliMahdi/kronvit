@@ -5,7 +5,7 @@ import torch.nn as nn
 from functools import partial
 
 
-from timm.models.vision_transformer import VisionTransformer, _cfg
+from timm.models.vision_transformer import VisionTransformer as _TimmVisionTransformer, _cfg
 from timm.models.registry import register_model
 from timm.models.layers import trunc_normal_
 
@@ -22,6 +22,19 @@ __all__ = [
     'vekron_deit_small_patch16_224', 'vekron_deit_tiny_patch16_224', 'vekron_deit_base_patch16_224'
 
 ]
+
+
+# Options consumed by the model entrypoints below (Kronecker settings) or added by newer timm
+# versions; they must not reach timm's VisionTransformer constructor.
+_NON_VIT_KWARGS = ('kron_rank', 'block_size', 'shape_bias', 'freeze_A', 'freeze_B',
+                   'structured_sparse', 'pretrained_cfg', 'pretrained_cfg_overlay')
+
+
+class VisionTransformer(_TimmVisionTransformer):
+    def __init__(self, *args, **kwargs):
+        for key in _NON_VIT_KWARGS:
+            kwargs.pop(key, None)
+        super().__init__(*args, **kwargs)
 
 
 class DistilledVisionTransformer(VisionTransformer):
@@ -152,7 +165,7 @@ def kron_deit_tiny_patch16_224(pretrained=False, **kwargs):
     'block_size': [4, 4]
     }
     kron_config['rank'] = kwargs['kron_rank'] if 'kron_rank' in kwargs else 1
-    if 'block_size' in kwargs:
+    if kwargs.get('block_size'):
         kron_config['block_size'] = [kwargs['block_size'], kwargs['block_size']]
     
     

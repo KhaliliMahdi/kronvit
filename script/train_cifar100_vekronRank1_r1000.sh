@@ -1,10 +1,9 @@
 #!/bin/bash
 
-# SCRIPT_PATH =  "/home/zhu.3723/kronvit/"
-cd /home/zhu.3723/kronvit/
-GPU_NUM=2
+cd "$(dirname "$0")/.."
+GPU_NUM=${GPU_NUM:-2}
 export OMP_NUM_THREADS=1
-export CUDA_VISIBLE_DEVICES=0,1
+export CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-0,1}
 
 
 
@@ -18,12 +17,12 @@ torchrun --nproc_per_node=$GPU_NUM \
      --batch-size 512 \
      --k1l \
      --data-set CIFAR \
-     --data-path /local/storage/ding/cifar100 \
+     --data-path ${DATA_PATH:-./data/cifar100} \
      --lr 1e-4\
      --warmup-lr 5e-5\
      --min-lr 5e-5\
-     --output_dir /local/storage/ding/kronvit/tiny \
-     --finetune /local/storage/ding/kronvit/tiny/best_checkpoint.pth \
+     --output_dir ${OUTPUT_ROOT:-./output}/tiny \
+     ${FINETUNE:+--finetune "$FINETUNE"} \
 
 
 

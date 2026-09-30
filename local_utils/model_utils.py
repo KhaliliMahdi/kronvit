@@ -24,6 +24,11 @@ def kron_decompose_model(model, layer_config=None):
             linear_layer = module
             patch_size = layer_config['block_size']
             rank = layer_config['rank']
+            if linear_layer.in_features % patch_size[0] or linear_layer.out_features % patch_size[1]:
+                # e.g. a 100-class head with 8x8 blocks: keep layers that do not tile evenly dense
+                print(f"keeping {name} dense: {linear_layer.in_features}x{linear_layer.out_features} "
+                      f"is not divisible into {patch_size[0]}x{patch_size[1]} blocks")
+                continue
             decomposed = linear2kronlinear(linear_layer, rank=rank, patch_size = patch_size)
             print(decomposed.a.shape, decomposed.b.shape)
             model._modules[name] = decomposed

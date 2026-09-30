@@ -1,10 +1,9 @@
 #!/bin/bash
 
-# SCRIPT_PATH =  "/home/zhu.3723/kronvit/"
-cd /home/zhu.3723/kronvit/
-GPU_NUM=2
+cd "$(dirname "$0")/.."
+GPU_NUM=${GPU_NUM:-2}
 export OMP_NUM_THREADS=1
-export CUDA_VISIBLE_DEVICES=2,3
+export CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-0,1}
 
 
 start_time=$(date +"%s") 
@@ -18,14 +17,14 @@ torchrun --nproc_per_node=$GPU_NUM \
      --kron \
      --kron_b_freeze \
      --data-set CIFAR \
-     --data-path /local/storage/ding/cifar100 \
+     --data-path ${DATA_PATH:-./data/cifar100} \
      --lr 1e-3\
      --warmup-lr 1e-4\
      --min-lr 1e-4\
-     --output_dir /home/zhu.3723/kronvit/output/cifar100_kron30/deit_tiny_patch16_224_40/ \
+     --output_dir ${OUTPUT_ROOT:-./output}/cifar100_kron30/deit_tiny_patch16_224_40/ \
      --kron_rank 40\
      --shape_bias 3\
-    --finetune /home/zhu.3723/kronvit/output/cifar100_kron30/deit_tiny_patch16_224_40/best_checkpoint.pth \
+    ${FINETUNE:+--finetune "$FINETUNE"} \
 
 torchrun --nproc_per_node=$GPU_NUM \
      --master_port 29512\
@@ -36,14 +35,14 @@ torchrun --nproc_per_node=$GPU_NUM \
      --kron \
      --kron_a_freeze \
      --data-set CIFAR \
-     --data-path /local/storage/ding/cifar100 \
+     --data-path ${DATA_PATH:-./data/cifar100} \
      --lr 1e-3\
      --warmup-lr 1e-4\
      --min-lr 1e-4\
-     --output_dir /home/zhu.3723/kronvit/output/cifar100_kron30/deit_tiny_patch16_224_40/ \
+     --output_dir ${OUTPUT_ROOT:-./output}/cifar100_kron30/deit_tiny_patch16_224_40/ \
      --kron_rank 40\
      --shape_bias 3\
-     --finetune /home/zhu.3723/kronvit/output/cifar100_kron30/deit_tiny_patch16_224_40/best_checkpoint.pth \
+     ${FINETUNE:+--finetune "$FINETUNE"} \
 
 end_time=$(date +"%s")
 

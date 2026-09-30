@@ -1,7 +1,7 @@
-cd /home/zhu.3723/kronvit/
-GPU_NUM=2
+cd "$(dirname "$0")/.."
+GPU_NUM=${GPU_NUM:-2}
 export OMP_NUM_THREADS=1
-export CUDA_VISIBLE_DEVICES=2,3
+export CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-0,1}
 
 
 start_time=$(date +"%s")
@@ -11,9 +11,9 @@ torchrun --nproc_per_node=$GPU_NUM \
      --model deit_base_patch16_224 \
      --batch-size 128 \
      --data-set CIFAR \
-     --data-path /local/storage/ding/cifar100 \
-     --output_dir /home/zhu.3723/kronvit/output/cifar100_train_common30/ \
-     # --finetune /home/zhu.3723/kronvit/output/cifar100_train_common30/best_checkpoint.pth \
+     --data-path ${DATA_PATH:-./data/cifar100} \
+     --output_dir ${OUTPUT_ROOT:-./output}/cifar100_train_common30/ \
+     # --finetune ${OUTPUT_ROOT:-./output}/cifar100_train_common30/best_checkpoint.pth \
 
 end_time=$(date +"%s")
 
